@@ -1,0 +1,289 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Subject-subject join:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+FishMark-Q5
+
+SPARQL PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX fd: <http://fishdelish.cs.man.ac.uk/rdf/vocab/resource1/> SELECT ?order ?class ?noOfGenera ?noOfSpecies ?marine ?brackish ?freshwater   ?aquarium ?remark  ?division ?activityLevel WHERE   { ?familiesID fd:families_Family "Psettodidae" .   ?familiesID fd:families_Order ?order .      ?familiesID fd:families_Class ?class .            ?familiesID fd:families_SpeciesCount ?SpeciesCount .               ?familiesID fd:families_Genera ?noOfGenera .                  ?familiesID fd:families_Species ?noOfSpecies .                    ?familiesID fd:families_Marine ?marine .                       ?familiesID fd:families_Brackish ?brackish .                          ?familiesID fd:families_Freshwater ?freshwater .                             ?familiesID fd:families_Aquarium ?aquarium .                                ?familiesID fd:families_Remark ?remark .                                      ?familiesID fd:families_Division ?division .                                         ?familiesID fd:families_Activity ?activityLevel .                                                 };      
+
+
+MongoDB:
+db.sub.find({families_Family:"Psettodidae"})
+
+
+
+Parameters:
+"Psettodidae"
+"Ipnopidae"
+"Cottidae"
+"Dalatiidae"
+"Phycidae"
+
+
+
+
+
+
+
+
+
+Bowlogna-Q7
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX bb: <http://www.owl-ontologies.com/Ontology1324312315.owl#>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>  SELECT ?P1 ?O1   WHERE {  ?S rdf:type bb:Student .  ?S bb:hasFamilyName "Department0StudentFamilyName0"^^<http://www.w3.org/2001/XMLSchema#string> .  ?S bb:hasFirstName "Department0StudentFirstName0"^^<http://www.w3.org/2001/XMLSchema#string>  .  ?S ?P1 ?O1 .  } 
+
+
+MongoDB
+db.sub.find({"hasFamilyName" : "Department0StudentFamilyName0","hasFirstName" : "Department0StudentFirstName0","type" : "Student" })
+
+
+
+
+Parameters:
+Department0StudentFamilyName0
+Department0StudentFirstName0
+
+Department0StudentFamilyName1
+Department0StudentFirstName1
+
+
+Department0StudentFamilyName2
+Department0StudentFirstName2
+
+
+Department0StudentFamilyName3
+Department0StudentFirstName3
+
+
+Department0StudentFamilyName4
+Department0StudentFirstName4
+
+
+
+
+
+
+WatDiv-Q7 
+SELECT ?v0  ?v3 ?v4 ?v5 ?v6 ?v7 ?v8 ?v9 WHERE {   	 	?v0 <http://purl.org/goodrelations/price> ?v3 .   	 		?v0 <http://purl.org/goodrelations/serialNumber> ?v4 .   	 			?v0 <http://purl.org/goodrelations/validFrom> ?v5 .   	 				?v0 <http://purl.org/goodrelations/validThrough> ?v6 .   	 					?v0 <http://schema.org/eligibleQuantity> ?v7 .  	 						?v0 <http://schema.org/eligibleRegion> ?v8 .   	 					 		?v0 <http://schema.org/priceValidUntil> ?v9 . }
+ 
+ No parameter, just executing the query 5 times!
+
+MongoDB Query: 
+db.sub.find({ serialNumber :{$exists:true},  validFrom :{$exists:true},   validThrough :{$exists:true},    eligibleQuantity :{$exists:true},     eligibleRegion :{$exists:true},      priceValidUntil :{$exists:true},      price :{$exists:true} })
+ 
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	Subject-object join:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+BioBench-Q2
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>  prefix allie: <http://purl.org/allie/ontology/201108#>  select distinct ?p ?n where {  ?p allie:hasshortformof ?n . ?n    rdfs:label "mf"@en . }
+
+Parameters:
+spf
+mees
+mf
+metc
+mfbr
+
+MongoDB:
+db.sub.aggregate([{$match:{label:"mfbr@en ."}},{$lookup:{from:"sub", localField:"idPrimaryKey",foreignField:"hasshortformof",as:"sojoin" }} ])
+
+
+watdiv-Q21
+SELECT ?v1 ?v2 ?v3 ?v4 ?v5 ?v6 ?v7 ?v8 ?v9 WHERE { 	<http://db.uwaterloo.ca/~galuc/wsdbm/Retailer7> <http://schema.org/contactPoint> ?v1 . 	?v1 <http://db.uwaterloo.ca/~galuc/wsdbm/friendOf> ?v2 . 	?v2 <http://db.uwaterloo.ca/~galuc/wsdbm/likes> ?v3 . 	?v3 <http://purl.org/stuff/rev#hasReview> ?v4 . 	?v4 <http://purl.org/stuff/rev#reviewer> ?v5 . 	?v5 <http://db.uwaterloo.ca/~galuc/wsdbm/makesPurchase> ?v6 . 	?v6 <http://db.uwaterloo.ca/~galuc/wsdbm/purchaseFor> ?v7 . 	?v7 <http://purl.org/stuff/rev#hasReview> ?v8 . 	?v8 <http://purl.org/stuff/rev#title> ?v9 . }
+
+
+
+Parameters:
+Retailer7
+Retailer8
+Retailer9
+Retailer10
+Retailer11
+
+db.sub.aggregate([{$match:{idPrimaryKey:"Retailer7" , contactPoint:{$exists:true}}},{$lookup:{from:"sub", localField:"contactPoint",foreignField:"idPrimaryKey",as:"join1" }},{$lookup:{from:"sub", localField:"join1.friendOf",foreignField:"idPrimaryKey",as:"join2" }} ])
+
+
+
+
+
+
+
+watdiv-Q22
+SELECT ?v1 ?v2 ?v3 ?v4 ?v5 ?v6 ?v7 ?v8 WHERE { 	<http://db.uwaterloo.ca/~galuc/wsdbm/Retailer7> <http://purl.org/goodrelations/offers> ?v1 . 	?v1 <http://purl.org/goodrelations/includes> ?v2 . 	?v2 <http://schema.org/author> ?v3 . 	?v3 <http://db.uwaterloo.ca/~galuc/wsdbm/friendOf> ?v4 . 	?v4 <http://db.uwaterloo.ca/~galuc/wsdbm/friendOf> ?v5 . 	?v5 <http://db.uwaterloo.ca/~galuc/wsdbm/makesPurchase> ?v6 . 	?v6 <http://db.uwaterloo.ca/~galuc/wsdbm/purchaseFor> ?v7 . 	?v7 <http://xmlns.com/foaf/homepage> ?v8 . }
+
+
+Parameters:
+Retailer7
+Retailer8
+Retailer9
+Retailer10
+Retailer11
+
+db.sub.aggregate([{$match:{idPrimaryKey:"Retailer7" , offers:{$exists:true}}},{$lookup:{from:"sub", localField:"offers",foreignField:"idPrimaryKey",as:"join1" }} ])
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	tree-like join:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+BioBench-Q1
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>  prefix allie: <http://purl.org/allie/ontology/201108#>  select distinct ?x ?y where {  ?p allie:inresearchareaof ?x. ?p allie:hasshortformof ?j . ?j  rdfs:label "spf"@en . ?p allie:haslongformof ?n . ?n  rdfs:label ?y . }
+
+Parameters:
+spf
+mees
+mf
+metc
+mfbr
+
+db.sub.aggregate([{$match:{label:"spf@en ."}},{$lookup:{from:"sub", localField:"idPrimaryKey",foreignField:"hasshortformof",as:"sojoin1" }}  ,{$lookup:{from:"sub", localField:"sojoin1.haslongformof",foreignField:"idPrimaryKey",as:"sojoin2" }} ])
+
+
+
+
+
+FishMark-Q19
+
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>  PREFIX fd: <http://fishdelish.cs.man.ac.uk/rdf/vocab/resource1/>SELECT ?order ?family ?genus ?species ?name  WHERE   {         ?nameID fd:comnames_ComName ?name  .          ?nameID fd:comnames_C_Code ?ccode .                ?nameID fd:comnames_SpecCode ?x .               ?x fd:species_Genus ?genus  .               ?x fd:species_Species ?species  .               ?x fd:species_FamCode ?f  .               ?f fd:families_Family  ?family  .               ?f  fd:families_Order ?order  .  } limit 2000
+
+
+
+MongoDB:
+db.sub.aggregate([{$lookup:{from:"sub", localField:"comnames_SpecCode", foreignField:"idPrimaryKey" , as:"join1"}},{$match:{"join1.species_Genus":{$exists:true}}} ,{$lookup:{from:"sub", localField:"join1.species_FamCode", foreignField:"idPrimaryKey" , as:"join2"}},{$limit:2000} ])
+
+
+
+
+
+Bowlogna-Q14
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX bb: <http://www.owl-ontologies.com/Ontology1324312315.owl#>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>  SELECT ?FamName ?FirstName   WHERE {  
+?X rdf:type bb:Student .  
+?Y rdf:type bb:Professor .  
+?Z rdf:type bb:Evaluation .  
+?D rdf:type bb:Department .  
+?Z bb:performedByStudent ?X .  
+?Z bb:evaluatedByProfessor ?Y .  
+?Y bb:isAffiliatedWithDepartment ?D .  
+?X bb:hasFamilyName ?FamName .  
+?X bb:hasFirstName ?FirstName .  
+?D bb:hasName "Department0"^^<http://www.w3.org/2001/XMLSchema#string>
+
+}
+
+
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  PREFIX bb: <http://www.owl-ontologies.com/Ontology1324312315.owl#>  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>  SELECT ?Y ?D ?FirstName ?type1 ?type2   WHERE {  ?Y bb:isAffiliatedWithDepartment ?D .  ?Y bb:hasFirstName ?FirstName .  ?Y rdf:type ?type1 . ?D bb:hasName "Department0"^^<http://www.w3.org/2001/XMLSchema#string> . ?D rdf:type ?type2 .  }
+
+
+
+
+MongoDB Query:
+db.sub.aggregate([{$match:{"idPrimaryKey":"Department0"}},{$lookup:{from:"sub", localField:"idPrimaryKey", foreignField:"isAffiliatedWithDepartment" , as:"join1"}}  ])
+
+
+Department1
+Department2
+Department3
+Department4
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	optional join:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Fish-Q2
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>PREFIX fish: <http://fishdelish.cs.man.ac.uk/rdf/vocab/resource1/>  SELECT ?common ?code ?refno  ?author ?demerspelag ?anacat  ?family ?order ?class ?entered  ?pic ?picid ?description ?refauthor ?refyear  ?collaborator  ?comments     WHERE   {  
+?x fish:species_Genus "Trimma" .  
+?x fish:species_SpecCode ?code.  
+?x fish:species_Species "striatum"  .   
+?x fish:species_Comments ?comments .  
+OPTIONAL {?x fish:species_Author ?author}.  
+OPTIONAL {?x fish:species_FBname ?common}.  
+OPTIONAL {?x fish:species_SpeciesRefNo ?refno}.  
+OPTIONAL {?ref fish:refrens_RefNo ?refno}.  
+OPTIONAL {?ref fish:refrens_Author ?refauthor}.  
+OPTIONAL {?ref fish:refrens_Year ?refyear}.  
+OPTIONAL {?x fish:species_Comments ?biology}.  
+OPTIONAL {?x fish:species_FamCode ?famcode}.  
+OPTIONAL {?x fish:species_DemersPelag ?demerspelag} .  
+OPTIONAL {?x fish:species_AnaCat ?anacat}.  
+OPTIONAL {?x fish:species_PicPreferredName ?pic}.  }
+
+
+
+MongoDB Query:
+
+db.sub.aggregate([{$match:{species_Species:"Triplophysa ."}},{$lookup:{from:"sub", localField:"species_SpeciesRefNo", foreignField:"refrens_RefNo" , as:"join1"}} ])
+
+
+
+
+
+"Trimma"
+"Daector"
+"Badis soraya"
+"Rhincodon"
+"Triplophysa"
+"Daector"
+
+
+
+
+
+
+
+
+
+BSBM-Q2
+PREFIX  bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/> PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX  bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/> PREFIX  dc:   <http://purl.org/dc/elements/1.1/>  SELECT  ?label ?comment ?producer ?productFeature ?propertyTextual1 ?propertyTextual2 ?propertyTextual3 ?propertyNumeric1 ?propertyNumeric2 ?propertyTextual4 ?propertyTextual5 ?propertyNumeric4    WHERE   { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>               rdfs:label            ?label ;               rdfs:comment          ?comment ;               bsbm:producer         ?p .    <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>               dc:publisher          ?p ;               bsbm:productFeature   ?f .      <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>               bsbm:productPropertyTextual1  ?propertyTextual1 ;               bsbm:productPropertyTextual2  ?propertyTextual2 ;               bsbm:productPropertyTextual3  ?propertyTextual3 ;               bsbm:productPropertyNumeric1  ?propertyNumeric1 ;               bsbm:productPropertyNumeric2  ?propertyNumeric2 .    OPTIONAL       { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>                   bsbm:productPropertyTextual4  ?propertyTextual4     .  }     OPTIONAL       { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>                   bsbm:productPropertyTextual5  ?propertyTextual5     .  }     OPTIONAL       { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer2/Product72>                   bsbm:productPropertyNumeric4  ?propertyNumeric4   .    }   }
+
+Product72, Product2, Product90, Product898, Product666
+
+
+MongoDB:
+db.sub.find({_id:"Product72"},{_id:0,label:1,comment:1,producer:1,productFeature:1,propertyTextual1:1,propertyTextual2:1,propertyTextual3:1,propertyNumeric1:1,propertyNumeric2:1,propertyTextual4:1,propertyTextual5:1,propertyNumeric4:1}).comment("BSBM_Query2")
+
+
+
+
+
+
+
+
+
+
+
+BSBM-Q4
+
+PREFIX  bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/> PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX  bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/>  SELECT  ?product ?label WHERE   { ?product  rdfs:label            ?label ;               rdf:type              bsbm-inst:ProductType12 ;               bsbm:productFeature   bsbm-inst:ProductFeature63 ;               bsbm:productPropertyNumeric1  ?p1     FILTER ( ?p1 > 36 )     ?product  bsbm:productPropertyNumeric3  ?p3     FILTER ( ?p3 < 352 )     OPTIONAL       { ?product  bsbm:productFeature  bsbm-inst:ProductFeature53 ;                   rdfs:label           ?testVar       }     FILTER ( ! bound(?testVar) )   } ORDER BY ?label LIMIT   10
+
+
+156 - 152  
+1 - 500   
+56 - 52
+456 - 452
+36 - 352
+
+
+db.sub.find({_id:/Product/, type: "ProductType12" , productPropertyNumeric1: {$gt: 156} , productPropertyNumeric3: {$lt: 152}, productFeature: {$all:["ProductFeature63"] , $nin:["ProductFeature53"]} },{_id:0,product:1,label:1}).sort({label:1}).limit(10).comment("BSBM_Query4_Cold")
+
+
+
+
+
+
